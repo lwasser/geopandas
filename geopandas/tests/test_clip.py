@@ -99,7 +99,7 @@ def multi_line(two_line_gdf):
 def multi_point(point_gdf):
     """ Create a multi-point GeoDataFrame. """
     multi_point = point_gdf.unary_union
-    out_df = gpd.GeoDataFrame(
+    out_df = GeoDataFrame(
         geometry=gpd.GeoSeries(
             [multi_point, Point(2, 5), Point(-11, -14), Point(-10, -12)]
         ),
@@ -115,7 +115,7 @@ def mixed_gdf():
     point = Point([(2, 3), (11, 4), (7, 2), (8, 9), (1, 13)])
     line = LineString([(1, 1), (2, 2), (3, 2), (5, 3), (12, 1)])
     poly = Polygon([(3, 4), (5, 2), (12, 2), (10, 5), (9, 7.5)])
-    gdf = gpd.GeoDataFrame(
+    gdf = GeoDataFrame(
         [1, 2, 3], geometry=[point, line, poly], crs={"init": "epsg:4326"}
     )
     return gdf
@@ -132,7 +132,7 @@ def test_not_gdf(single_rectangle_gdf):
 def test_returns_gdf(point_gdf, single_rectangle_gdf):
     """Test that function returns a GeoDataFrame (or GDF-like) object."""
     out = gpd.clip(point_gdf, single_rectangle_gdf)
-    assert isinstance(out, gpd.GeoDataFrame)
+    assert isinstance(out, GeoDataFrame)
 
 
 def test_non_overlapping_geoms():
