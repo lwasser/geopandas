@@ -6,6 +6,7 @@ import numpy as np
 from shapely.geometry import Polygon, Point, LineString
 import shapely
 import geopandas as gpd
+from geopandas import GeoDataFrame
 
 
 @pytest.fixture
@@ -132,7 +133,7 @@ def test_returns_gdf(point_gdf, single_rectangle_gdf):
     """Test that function returns a GeoDataFrame (or GDF-like) object."""
     out = gpd.clip(point_gdf, single_rectangle_gdf)
     assert isinstance(out, gpd.GeoDataFrame)
-  
+
 
 def test_non_overlapping_geoms():
     """Test that a bounding box returns error if the extents don't overlap"""
