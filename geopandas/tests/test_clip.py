@@ -72,9 +72,7 @@ def two_line_gdf():
 def multi_poly_gdf(donut_geometry):
     """ Create a multi-polygon GeoDataFrame. """
     multi_poly = donut_geometry.unary_union
-    out_df = GeoDataFrame(
-        geometry=gpd.GeoSeries(multi_poly), crs={"init": "epsg:4326"}
-    )
+    out_df = GeoDataFrame(geometry=gpd.GeoSeries(multi_poly), crs={"init": "epsg:4326"})
     out_df = out_df.rename(columns={0: "geometry"}).set_geometry("geometry")
     out_df["attr"] = ["pool"]
     return out_df
@@ -84,7 +82,7 @@ def multi_poly_gdf(donut_geometry):
 def multi_line(two_line_gdf):
     """ Create a multi-line GeoDataFrame.
 
-    This has one multi line and another regular line.
+    This GDF has one multiline and one regular line.
     """
     # Create a single and multi line object
     multiline_feat = two_line_gdf.unary_union
@@ -92,7 +90,6 @@ def multi_line(two_line_gdf):
     out_df = GeoDataFrame(
         geometry=gpd.GeoSeries([multiline_feat, linec]), crs={"init": "epsg:4326"}
     )
-    out_df = out_df.rename(columns={0: "geometry"}).set_geometry("geometry")
     out_df["attr"] = ["road", "stream"]
     return out_df
 
@@ -179,7 +176,7 @@ def test_clip_multipoly(multi_poly_gdf, single_rectangle_gdf):
         clip = gpd.clip(multi_poly_gdf, single_rectangle_gdf)
         assert hasattr(clip, "geometry")
         assert np.array_equal(clip.total_bounds, single_rectangle_gdf.total_bounds)
-        # Assert the returned data is a geometry collection since there were sliver geoms
+        # Assert returned data is a geometry collection given sliver geoms
         assert "GeometryCollection" in clip.geom_type[0]
 
 
