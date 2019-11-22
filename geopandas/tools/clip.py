@@ -10,6 +10,7 @@ A module to clip vector data using GeoPandas.
 import pandas as pd
 from geopandas import GeoDataFrame, GeoSeries
 import numpy as np
+import warnings
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -172,9 +173,11 @@ def clip(gdf, clip_obj):
     order = pd.Series(range(len(gdf)), index=gdf.index)
     concat = pd.concat([point_gdf, poly_line_gdf])
     concat["_order"] = order
+
     if "GeometryCollection" in concat.geom_type[0]:
-        raise Warning(
-            "A geometry collection has been returned, likely due "
-            "to slivers being returned from a multipolygon being clipped."
+        warnings.warn(
+            "A geometry collection has been returned. This is likely due to a"
+            "line sliver being returned after clipping a polygon. To properly "
+            "plot your data you can use .explode()"
         )
     return concat.sort_values(by="_order").drop(columns="_order")
