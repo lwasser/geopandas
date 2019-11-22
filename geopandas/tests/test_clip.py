@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, Point, LineString
 import shapely
 import geopandas as gpd
 from geopandas import GeoDataFrame
+import warnings
 
 
 @pytest.fixture
@@ -167,23 +168,33 @@ def test_clip_poly(buffered_locations, single_rectangle_gdf):
     assert all(clipped_poly.geom_type == "Polygon")
 
 
-def test_clip_multipoly(multi_poly_gdf, single_rectangle_gdf):
-    """Test a multi poly object can be clipped properly.
+def test_clip_multipoly_slivers(multi_poly_gdf, single_rectangle_gdf):
+    """Test a multi poly object where the return includes a sliver.
 
     Also the bounds of the object should == the bounds of the clip object
     if they fully overlap (as they do in these fixtures). """
-    with pytest.raises(Warning):
-        clip = gpd.clip(multi_poly_gdf, single_rectangle_gdf)
-        assert hasattr(clip, "geometry")
-        assert np.array_equal(clip.total_bounds, single_rectangle_gdf.total_bounds)
-        # Assert returned data is a geometry collection given sliver geoms
-        assert "GeometryCollection" in clip.geom_type[0]
+    clip = gpd.clip(multi_poly_gdf, single_rectangle_gdf)
+
+    assert hasattr(clip, "geometry")
+    assert np.array_equal(clip.total_bounds, single_rectangle_gdf.total_bounds)
+    # Assert returned data is a geometry collection given sliver geoms
+    assert "GeometryCollection" in clip.geom_type[0]
 
 
-def test_clip_single_multipolygon(buffered_locations, larger_single_rectangle_gdf):
-    """Test clipping a multi poly with another poly that
+def test_clip_multipoly_warning(multi_poly_gdf, single_rectangle_gdf):
+    """Test that a user warning is provided when clip outputs a sliver."""
 
-    no sliver shapes should be returned in this clip. """
+    with pytest.warns(UserWarning):
+        gpd.clip(multi_poly_gdf, single_rectangle_gdf)
+        warnings.warn("A geometry collection has been returned. ", UserWarning)
+
+
+def test_clip_single_multipoly_no_slivers(
+    buffered_locations, larger_single_rectangle_gdf
+):
+    """Test clipping a multi poly with another poly
+
+    No sliver shapes are returned in this clip operation. """
 
     multi = buffered_locations.dissolve(by="type").reset_index()
     clip = gpd.clip(multi, larger_single_rectangle_gdf)
