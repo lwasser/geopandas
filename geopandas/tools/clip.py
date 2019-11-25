@@ -102,9 +102,8 @@ def clip(gdf, clip_obj, drop_slivers=False):
           The clip_obj's geometry is dissolved into one geometric feature
           and intersected with gdf.
     drop_slivers : Boolean
-          Will drop slivers of a polygon if returned as a GeometryCollection.
-          This will get rid of all line features in a return and only return
-          the polygons.
+          If a clip operation returns a GeometryCollection, remove polygon
+          slivers and only return polygon features.
 
     Returns
     -------
